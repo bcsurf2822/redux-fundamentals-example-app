@@ -67,3 +67,38 @@ render()
 document.getElementById('increment').addEventListener('click', function () {
   store.dispatch({ type: 'counter/incremented' })
 })
+
+//EXAMPLE ASNC FUNCTION MIDDLEWARE
+const asyncFunctionMiddleware = storeAPI => next => action => {
+  // If the "action" is actually a function instead...
+  if (typeof action === 'function') {
+    // then call the function and pass `dispatch` and `getState` as arguments
+    return action(storeAPI.dispatch, storeAPI.getState)
+  }
+
+  // Otherwise, it's a normal action - send it onwards
+  return next(action)
+}
+
+//USE THE MIDDLEWARE LIKE SO
+const middlewareEnhancer = applyMiddleware(asyncFunctionMiddleware)
+const store = createStore(rootReducer, middlewareEnhancer)
+
+// Write a function that has `dispatch` and `getState` as arguments
+const fetchSomeData = (dispatch, getState) => {
+  // Make an async HTTP request
+  client.get('todos').then(todos => {
+    // Dispatch an action with the todos we received
+    dispatch({ type: 'todos/todosLoaded', payload: todos })
+    // Check the updated store state after dispatching
+    const allTodos = getState().todos
+    console.log('Number of todos after loading: ', allTodos.length)
+  })
+}
+
+// Pass the _function_ we wrote to `dispatch`
+store.dispatch(fetchSomeData)
+// logs: 'Number of todos after loading: ###'
+
+//THIS ASYNC FUNCTION MIDDLEARWE LETS US PASS A FUNCTION TO DIPATCH
+//We can wriete asnc logic (HTTP request) then dispatch a normal action object when the request compelted

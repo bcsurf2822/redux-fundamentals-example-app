@@ -1,18 +1,20 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import './index.css'
 import { Provider } from 'react-redux'
+import './index.css'
+import App from './App'
 
 import './api/server'
-import App from './App'
-import store from './store'
 
-//Render Provider around the entire App and pass Redux store to as a prop
+import store from './store'
+import { fetchTodos } from './features/todos/todosSlice'
+
+store.dispatch(fetchTodos)
 
 ReactDOM.render(
   <React.StrictMode>
     <Provider store={store}>
-    <App />
+      <App />
     </Provider>
   </React.StrictMode>,
   document.getElementById('root')
