@@ -1,39 +1,21 @@
-const initialState = {
-  todos: [
-    {id: 0, text: 'Learn React', completed: true},
-    {id: 1, text: 'Learn Redux', completed: false, color: 'purple'},
-    {id: 2, text: 'Build Something Fun', completed: false,color: 'blue'},
-  ],
-  filters: {
-    status: 'All',
-    colors: []
-  }
-}
+import { combineReducers } from 'redux'
 
-//Initiail state as Def val
-export default function appReducer(state = initialState, action) {
-  //reducer usually looks at the action type field to decide what happens
-  switch (action.type) {
-    //Do something here based on different actions
-    case 'todos/todoAdded': {
-      return {
-        //that has all existing state data
-        ...state,
-        //but has a new array for the 'todos' field
-        todos: [
-          //alll old to dos
-          ...state.todos,
-          //and the new todo object
-          {
-            id: nextTodoId(state.todos),
-            text: action.payload,
-            completed: false
-          }
-        ]
-      }
-    }
-    default:
-      //if this reducer doesn't recognize the action type or doesn't care about this specific caiton return the existing state unchanged
-      return state
-  }
-}
+import todosReducer from './features/todos/todosSlice'
+import filtersReducer from './features/filters/filtersSlice'
+
+const rootReducer = combineReducers({
+  // Define a top-level state field named `todos`, handled by `todosReducer`
+  todos: todosReducer,
+  filters: filtersReducer,
+})
+
+export default rootReducer
+
+// export default function rootReducer(state = {}, action) {
+//   //always return a new object for the root state
+//   return {
+//     //value of 'state.todos'is whatever the todos reducer retruns
+//     todos: todosReducer(state.todos, action),
+//     filters: filtersReducer(state.filters, action)
+//   }
+// }
